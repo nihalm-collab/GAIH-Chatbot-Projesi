@@ -1,1 +1,1 @@
-# GAIH-Chatbot-Projesi
+#🌍Afet Bilgilendirme(Deprem ve Tsunami) Chatbotu
