@@ -1,50 +1,97 @@
-## İlaç Bilgilendirme Chatbotu
+# Deprem Bilgilendirme ve Risk Analizi Chatbotu
 
-## Proje Hakkında
-Bu proje,kullanıcıların yaygın ilaçların etken maddeleri, temel kullanım amaçları ve potansiyel yaygın yan etkileri hakkında güvenilir ve kaynak bazlı bilgi almasını sağlayan bir AI asistanı oluşturur. AI asistan, kesinlikle tıbbi tavsiye vermeyecektir.
+> [cite_start]Bu proje, **Akbank GenAI Bootcamp** kapsamında, RAG (Retrieval Augmented Generation) temelli bir chatbot geliştirme yönergesine uygun olarak hazırlanmıştır[cite: 2]. Chatbot, Türkiye'deki tarihi sismik verilere dayalı risk analizi ve acil durum bilgilendirmesi sağlamayı hedefler.
 
-## Kullanılan Teknolojiler
-Haystack: RAG pipeline framework
-**Kaynak:** Kaggle - Ahmed Mohamed Zaki
-**İçerik Özeti:**
-Bu veri seti, 2001-2022 yılları arasında kaydedilmiş **782 önemli deprem kaydını** içermektedir. Her kayıt, depremin büyüklüğü (magnitude), derinliği (depth), coğrafi koordinatları (latitude/longitude), uyarı seviyesi (alert: green, yellow, orange, red) ve **tsunami potansiyeli (tsunami: 1/0)** gibi temel jeolojik ve afet risk özelliklerini barındırır.
+## [cite_start] Projenin Amacı [cite: 9]
 
-**Veri Hazırlama Metodolojisi:**
-[cite_start]Hazır CSV veri seti kullanılmıştır[cite: 16]. Veri, Pandas kütüphanesi ile yüklenmiş ve her bir deprem kaydı için ilgili sayısal ve kategorik sütunlar, RAG sistemi tarafından anlamlandırılabilmesi için tek bir açıklayıcı metin bloğu (`chunk`) halinde birleştirilmiştir.
+[cite_start]Bu projenin temel amacı[cite: 9], kullanıcıların deprem öncesi hazırlık, deprem anı ve sonrası süreçler için **güvenilir ve hızlı** bilgiye erişimini sağlamaktır.
 
-## [cite_start]3. Kullanılan Yöntemler ve Çözüm Mimarisi [cite: 11]
+1.  **Veriye Dayalı Risk Analizi:** Kullanıcının konumuna (enlem/boylam) ait geçmişteki büyük deprem verilerini işleyerek bölgesel sismik risk skorunu ve geçmiş olayları sunmak.
+2.  **RAG ile Güvenilir Bilgi:** Deprem öncesi, anı ve sonrası gibi kritik konularda, **Gemini API** ve RAG mimarisi ile doğru ve entegre edilmiş kılavuzlardan bilgi sağlamak.
+3.  [cite_start]**Hızlı Erişim:** Basit bir web arayüzü üzerinden proje kabiliyetlerini sergilemek[cite: 25].
 
-Proje, **Retrieval-Augmented Generation (RAG)** temelinde inşa edilmiştir.
+## [cite_start] Veri Seti Hakkında Bilgi [cite: 10]
 
-[cite_start]**Teknolojik Bileşenler:** [cite: 42, 43, 44]
-* **RAG Framework:** <LangChain / Haystack / Özel Python Scripti>
-* **Generation Model (LLM):** <Gemini API / OpenAI API / Diğer>
-* **Embedding Model:** <Google-embed-001 / Cohere / Diğer>
-* **Vektör Database:** <ChromaDB / FAISS / Pinecone / Diğer>
-* **Web Arayüzü:** <Streamlit / Flask / Diğer>
+Bu projenin temel sismik veri kaynağı, Kaggle'dan elde edilen tarihi deprem verileridir.
 
-**Çözüm Mimarisi Akışı (Özet):**
-1.  Kullanıcı bir sorgu gönderir (Örn: "En büyük tsunami riski taşıyan 7.0 büyüklüğündeki deprem hangisiydi?").
-2.  Sorgu, **Embedding Model** ile vektöre dönüştürülür.
-3.  Vektör, **Vektör Database** içinde aranarak, sorguyla en alakalı (en benzer vektörlere sahip) **deprem kayıtları** (metin parçaları) alınır (Retrieval).
-4.  Alınan bu kayıtlar (kanıt metinleri), orijinal sorguyla birlikte **Generation Model**'e gönderilir.
-5.  **Generation Model (LLM)**, sağlanan bilgilere dayanarak tutarlı ve bilgilendirici bir yanıt üretir ve kullanıcıya sunar.
+| Başlık | Detay |
+| :--- | :--- |
+| **Ana Veri Seti** | Turkey Earthquake Data (1914 - 2023) |
+| **Kaynak** | Kaggle (Ozge Cinko) |
+| **İçerik** | 1914-2023 yılları arasındaki depremlerin; Enlem, Boylam, Büyüklük, Derinlik ve Oluş Tarihi bilgileri. |
+| **Lisans** | **CC BY-SA 4.0 Uluslararası** |
+| **Hazırlanış Metodolojisi:** | [cite_start]Veri seti hazır olarak kullanılmıştır[cite: 17]. Veri seti içerisindeki `Enlem`, `Boylam` ve `Büyüklük` sütunları, bölgesel risk skorlaması için işlenmiştir ve RAG sürecinde kullanılmak üzere metin parçalarına (`chunks`) dönüştürülmüştür. |
+| **Atıf Yükümlülüğü:** | Lisans (CC BY-SA 4.0) gereği, veri setinin sahibine ve lisansa atıf yapılmıştır. |
 
-## [cite_start]4. Elde Edilen Sonuçlar Özeti [cite: 12]
+***
 
-<Buraya, chatbot'unuzun başarısını gösteren kısa bir özet yazın. Örneğin:>
-* Chatbot, <Hassasiyet Oranı>% doğrulukla, veri setindeki deprem bilgilerini sorgulara yanıtlayabilmiştir.
-* En başarılı yanıtlar, büyüklük veya yıl bazlı sorgulamalarda elde edilmiştir.
-* Proje, RAG'ın yapılandırılmış veriyi (CSV) doğal dil yanıtlarına dönüştürme yeteneğini başarılı bir şekilde kanıtlamıştır.
+## [cite_start]⚙️ Çözüm Mimarisi ve Kullanılan Yöntemler [cite: 11, 23, 44]
 
-## 5. Proje Çalışma Kılavuzu ve Web Arayüzü
+[cite_start]Projenin temel mimarisi RAG (Retrieval Augmented Generation) üzerine kurulmuştur[cite: 2, 23].
 
-Projenin kurulumu ve çalıştırılmasına dair detaylı adımlar, <Ayrı Bir Dosya (Örn: `SETUP.md`) veya Bu README'nin İlgili Bölümü> altında yer almaktadır.
+| Bileşen | Örnek Teknoloji | Görev ve Amacı |
+| :--- | :--- | :--- |
+| **LLM (Generation Model)** | [cite_start]Gemini API [cite: 33, 42] | [cite_start]Vektör DB'den gelen bağlamı kullanarak nihai, akıcı ve bilgilendirici cevabı üretmek[cite: 42]. |
+| **RAG Çerçevesi** | [cite_start]LangChain veya Haystack [cite: 35, 44] | [cite_start]Veri alımı, bağlam oluşturma ve LLM'e gönderme sürecini yönetmek[cite: 44]. |
+| **Vektör Veritabanı** | [cite_start]Chroma / FAISS / Pinecone [cite: 43] | Sismik verilerden ve ek acil durum kılavuzlarından türetilen metin parçalarını vektör olarak saklamak. |
+| **Embedding Modeli** | [cite_start]Google Embedding Modeli [cite: 43] | Metin verilerini, vektör veritabanında arama yapılabilir hâle getirmek. |
+| **Web Arayüzü** | Streamlit / Gradio | [cite_start]Chatbot'un test edileceği kullanıcı arayüzünü oluşturmak[cite: 24]. |
 
-Projenin web arayüzü ile ilgili detaylı kullanım kılavuzu ve ekran görüntüleri/videosu <Ayrı Bir Dosya (Örn: `PRODUCT.md`) veya Bu README'nin İlgili Bölümü> altında bulunmaktadır.
+***
 
-## [cite_start]🌐 Web Arayüzü Linki (Mutlaka Paylaşılmalıdır) [cite: 13]
+## [cite_start]💡 Elde Edilen Sonuçlar (Özet) [cite: 12]
 
-Projenin deploy edildiği çalışan link:
+[cite_start]Projenin sonunda "Güvenli Adım" Chatbot'u, aşağıdaki kabiliyetleri özet şekilde [cite: 12] sunacaktır:
 
-**<BURAYA ÇALIŞAN CHATBOT WEB LİNKİNİZİ EKLEYİN>**
+* **Tarihsel Risk Analizi:** Kullanıcının sorguladığı bölgeye ait sismik verileri anlık olarak analiz edebilme.
+* **Bağlamsal Bilgilendirme:** RAG sayesinde, deprem anına ve sonrasına dair (ilk yardım, güvenlik önlemleri) sorulara güvenilir kılavuzlardan yanıt üretebilme.
+* [cite_start]**Kolay Kullanım:** Web arayüzü üzerinden projeyi sergileme[cite: 25].
+
+***
+
+## [cite_start]🚀 Projeyi Yerelde Çalıştırma Kılavuzu [cite: 19, 20]
+
+[cite_start]Kodun çalıştırılabilmesi için gerekenler bu kılavuzda yer alacaktır[cite: 20].
+
+1.  **Depoyu Klonlayın:**
+    ```bash
+    git clone [REPO_LİNKİNİZ]
+    cd [REPO_ADI]
+    ```
+
+2.  **Sanal Ortam Kurulumu:**
+    ```bash
+    # Sanal ortam oluşturma
+    python -m venv venv
+    
+    # Sanal ortamı aktive etme
+    source venv/bin/activate  # Linux/macOS
+    # veya
+    .\venv\Scripts\activate    # Windows
+    ```
+
+3.  **Bağımlılıkları Yükleme:**
+    * [cite_start]Gerekli tüm kütüphaneler (`requirements.txt` dosyanızda [cite: 21] yer alacaktır).
+    ```bash
+    pip install -r requirements.txt 
+    ```
+
+4.  **API Anahtarını Ayarlama:**
+    * **Gemini API Key** edinin ve ortam değişkeni olarak ayarlayın:
+    ```bash
+    # Linux/macOS
+    export GEMINI_API_KEY="YOUR_API_KEY" 
+    # Windows (Command Prompt)
+    set GEMINI_API_KEY="YOUR_API_KEY"
+    ```
+
+5.  **Chatbot'u Başlatma:**
+    ```bash
+    [cite_start]streamlit run app.py # veya python your_main_file.py [cite: 21]
+    ```
+
+***
+
+## [cite_start]🔗 Canlı Web Arayüzü Linki [cite: 13, 25]
+
+> [cite_start]**[BURAYA PROJE DEPLOY EDİLDİĞİNDE GÜNCEL WEB LİNKİ MUTLAKA EKLENMELİDİR]** [cite: 13, 25]
