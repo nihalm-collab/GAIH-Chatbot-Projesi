@@ -2,7 +2,7 @@
 
 > [cite_start]Bu proje, **Akbank GenAI Bootcamp** kapsamında, RAG (Retrieval Augmented Generation) temelli bir chatbot geliştirme yönergesine uygun olarak hazırlanmıştır[cite: 2]. Chatbot, Türkiye'deki tarihi sismik verilere dayalı risk analizi ve acil durum bilgilendirmesi sağlamayı hedefler.
 
-## [cite_start] Projenin Amacı [cite: 9]
+## [cite_start]Projenin Amacı [cite: 9]
 
 [cite_start]Bu projenin temel amacı[cite: 9], kullanıcıların deprem öncesi hazırlık, deprem anı ve sonrası süreçler için **güvenilir ve hızlı** bilgiye erişimini sağlamaktır.
 
@@ -10,7 +10,7 @@
 2.  **RAG ile Güvenilir Bilgi:** Deprem öncesi, anı ve sonrası gibi kritik konularda, **Gemini API** ve RAG mimarisi ile doğru ve entegre edilmiş kılavuzlardan bilgi sağlamak.
 3.  [cite_start]**Hızlı Erişim:** Basit bir web arayüzü üzerinden proje kabiliyetlerini sergilemek[cite: 25].
 
-## [cite_start] Veri Seti Hakkında Bilgi [cite: 10]
+## [cite_start]Veri Seti Hakkında Bilgi [cite: 10]
 
 Bu projenin temel sismik veri kaynağı, Kaggle'dan elde edilen tarihi deprem verileridir.
 
@@ -25,7 +25,7 @@ Bu projenin temel sismik veri kaynağı, Kaggle'dan elde edilen tarihi deprem ve
 
 ***
 
-## [cite_start]⚙️ Çözüm Mimarisi ve Kullanılan Yöntemler [cite: 11, 23, 44]
+## [cite_start]Çözüm Mimarisi ve Kullanılan Yöntemler [cite: 11, 23, 44]
 
 [cite_start]Projenin temel mimarisi RAG (Retrieval Augmented Generation) üzerine kurulmuştur[cite: 2, 23].
 
@@ -39,7 +39,7 @@ Bu projenin temel sismik veri kaynağı, Kaggle'dan elde edilen tarihi deprem ve
 
 ***
 
-## [cite_start]💡 Elde Edilen Sonuçlar (Özet) [cite: 12]
+## [cite_start]Elde Edilen Sonuçlar (Özet) [cite: 12]
 
 [cite_start]Projenin sonunda "Güvenli Adım" Chatbot'u, aşağıdaki kabiliyetleri özet şekilde [cite: 12] sunacaktır:
 
@@ -49,7 +49,7 @@ Bu projenin temel sismik veri kaynağı, Kaggle'dan elde edilen tarihi deprem ve
 
 ***
 
-## [cite_start]🚀 Projeyi Yerelde Çalıştırma Kılavuzu [cite: 19, 20]
+## [cite_start]Projeyi Yerelde Çalıştırma Kılavuzu [cite: 19, 20]
 
 [cite_start]Kodun çalıştırılabilmesi için gerekenler bu kılavuzda yer alacaktır[cite: 20].
 
