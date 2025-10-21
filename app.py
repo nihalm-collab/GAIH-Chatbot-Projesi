@@ -12,7 +12,7 @@ import streamlit as st
 from datasets import load_dataset
 import chromadb
 from chromadb.config import Settings
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.text_splitter import CharacterTextSplitter as RecursiveCharacterTextSplitter
 from langchain.vectorstores import Chroma
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 
