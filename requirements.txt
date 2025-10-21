@@ -3,5 +3,5 @@ python-dotenv
 datasets
 chromadb
 langchain
-openai
+langchain-google-genai
 tiktoken
