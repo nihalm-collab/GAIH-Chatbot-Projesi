@@ -15,7 +15,7 @@ import streamlit as st
 from dotenv import load_dotenv
 from datasets import load_dataset
 import google.generativeai as genai
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Chroma
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
