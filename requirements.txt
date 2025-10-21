@@ -1,6 +1,8 @@
+streamlit
 langchain
 chromadb
 google-generativeai
-streamlit
+langchain-google-genai
 pandas
 python-dotenv
+datasets
