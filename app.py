@@ -1,106 +1,83 @@
 """
-📚 Kitap Asistanı Chatbot (Akbank GenAI Bootcamp)
---------------------------------------------------
-Bu proje, Kitapyurdu yorum verisetine dayalı olarak
-RAG (Retrieval Augmented Generation) mimarisiyle
-çalışan bir kitap asistanı chatbotudur.
+📚 KitapYurdu Yorum Asistanı Chatbot (Gemini 2.0 Flash)
+--------------------------------------------------------
+Bu proje, Hugging Face üzerindeki 'alibayram/kitapyurdu_yorumlar' veri setini kullanarak
+Gemini 2.0 Flash modeliyle RAG (Retrieval Augmented Generation) mimarisine dayalı
+bir kitap asistanı chatbotu oluşturur.
 """
 
-# ===============================
-# 1️⃣ Gerekli kütüphaneler
-# ===============================
 import os
-import pandas as pd
-import streamlit as st
 from dotenv import load_dotenv
+import streamlit as st
 from datasets import load_dataset
-import google.generativeai as genai
+import chromadb
+from chromadb.config import Settings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import Chroma
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain.vectorstores import Chroma
+from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 
-# ===============================
-# 2️⃣ Ortam değişkenleri
-# ===============================
+# --- 1. Ortam Değişkenlerini Yükle
 load_dotenv()
 HF_TOKEN = os.getenv("HF_TOKEN")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-genai.configure(api_key=GEMINI_API_KEY)
+# --- 2. Streamlit Başlığı
+st.set_page_config(page_title="📖 KitapYurdu Yorum Asistanı (Gemini)")
+st.title("📖 KitapYurdu Yorum Asistanı (Gemini 2.0 Flash)")
 
-# ===============================
-# 3️⃣ Veri seti yükleme
-# ===============================
-DATA_PATH = "data/kitapyurdu_sample.csv"
-os.makedirs("data", exist_ok=True)
+# --- 3. Hugging Face'ten Veri Çek
+@st.cache_data
+def load_kitapyurdu_dataset():
+    dataset = load_dataset("alibayram/kitapyurdu_yorumlar", split="train", token=HF_TOKEN)
+    return dataset
 
-if not os.path.exists(DATA_PATH):
-    dataset = load_dataset("alibayram/kitapyurdu_yorumlar", split="train", use_auth_token=HF_TOKEN)
-    df = pd.DataFrame(dataset)
-    df = df[["kitap_adi", "yorum", "puan"]].dropna(subset=["yorum"])
-    df = df.sample(n=2000, random_state=42)
-    df.to_csv(DATA_PATH, index=False)
-else:
-    df = pd.read_csv(DATA_PATH)
+st.write("📡 Veri seti yükleniyor...")
+dataset = load_kitapyurdu_dataset()
+st.success("✅ Veri seti başarıyla yüklendi!")
 
-# ===============================
-# 4️⃣ Embedding ve ChromaDB
-# ===============================
-persist_dir = "chroma_db"
-embedding_model = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+# --- 4. Metinleri Böl
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+texts = text_splitter.split_text(" ".join(dataset["yorum"][:500]))  # İlk 500 yorum örnek olarak alınır
 
-if os.path.exists(persist_dir):
-    vector_store = Chroma(persist_directory=persist_dir, embedding_function=embedding_model)
-else:
-    splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
-    texts = splitter.split_text("\n".join(df["yorum"].astype(str).tolist()))
-    vector_store = Chroma.from_texts(texts=texts, embedding=embedding_model, persist_directory=persist_dir)
-    vector_store.persist()
+# --- 5. ChromaDB (vektör veritabanı)
+PERSIST_DIR = "chroma_db"
+os.makedirs(PERSIST_DIR, exist_ok=True)
 
-retriever = vector_store.as_retriever(search_kwargs={"k": 5})
-model = genai.GenerativeModel("gemini-1.5-flash")
+client = chromadb.Client(Settings(chroma_db_impl="duckdb+parquet", persist_directory=PERSIST_DIR))
 
-# ===============================
-# 5️⃣ Streamlit Arayüzü
-# ===============================
-st.set_page_config(page_title="📚 Kitap Asistanı Chatbot", layout="wide")
+embeddings = GoogleGenerativeAIEmbeddings(
+    model="models/embedding-001",
+    google_api_key=GEMINI_API_KEY
+)
 
-st.title("📚 Kitap Asistanı Chatbot")
-st.markdown("### 💬 Kitapyurdu yorumlarına dayalı akıllı kitap asistanı")
-st.markdown("Soru sor: Örneğin, *'Zülfü Livaneli kitapları hakkında genel izlenimler nasıl?'*")
+vectorstore = Chroma.from_texts(
+    texts,
+    embeddings,
+    persist_directory=PERSIST_DIR
+)
 
-# Sohbet geçmişi
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []
+# --- 6. Retriever + LLM (Gemini 2.0 Flash)
+retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
 
-user_input = st.text_input("Sorunu yaz:", key="user_input")
+llm = ChatGoogleGenerativeAI(
+    model="gemini-2.0-flash",
+    google_api_key=GEMINI_API_KEY,
+    temperature=0.2
+)
 
-def search_kitap(query):
-    results = retriever.get_relevant_documents(query)
-    context = "\n".join([r.page_content for r in results])
+from langchain.chains import RetrievalQA
+qa_chain = RetrievalQA.from_chain_type(
+    llm=llm,
+    chain_type="stuff",
+    retriever=retriever,
+)
 
-    prompt = f"""
-    Aşağıdaki kullanıcı yorumlarına dayanarak kitaplarla ilgili soruya yanıt ver:
-    ---
-    {context}
-    ---
-    Soru: {query}
-    Yanıtın Türkçe, doğal ve özet olsun.
-    """
+# --- 7. Kullanıcı Girdisi
+st.markdown("### 💬 Kitaplar hakkında bir soru sor:")
+user_query = st.text_input("Örnek: 'En çok beğenilen kitap hangisi?'", "")
 
-    response = model.generate_content(prompt)
-    return response.text
-
-# Kullanıcı sorgusu işlendiğinde
-if st.button("Gönder") and user_input:
-    answer = search_kitap(user_input)
-    st.session_state.chat_history.append((user_input, answer))
-    st.text_area("Chatbot Yanıtı", answer, height=200)
-
-# Sohbet geçmişini göster
-if st.session_state.chat_history:
-    st.markdown("### 🕒 Sohbet Geçmişi")
-    for q, a in st.session_state.chat_history[-5:]:
-        st.markdown(f"**Sen:** {q}")
-        st.markdown(f"**Asistan:** {a}")
-        st.markdown("---")
+if user_query:
+    with st.spinner("Yanıt oluşturuluyor..."):
+        response = qa_chain.run(user_query)
+        st.markdown("### 🧠 Yanıt:")
+        st.write(response)
