@@ -53,3 +53,23 @@ Kullanıcılar kitaplarla ilgili sorular sorabilir ve chatbot, kullanıcı yorum
 ```bash
 git clone <REPO_LINK>
 cd <REPO_NAME>
+```
+2. Virtual environment oluşturun ve aktif edin:
+```bash
+python -m venv venv
+source venv/bin/activate   # Linux/Mac
+venv\Scripts\activate      # Windows
+```
+3. Gerekli paketleri yükleyin:
+```bash
+pip install -r requirements.txt
+```
+4. `.env` dosyasını oluşturun ve API anahtarlarınızı ekleyin:
+```bash
+OPENAI_API_KEY=your_openai_api_key_here
+HF_TOKEN=your_huggingface_token_here
+```
+5. Streamlit uygulamasını çalıştırın:
+```bash
+streamlit run app.py
+``` 
