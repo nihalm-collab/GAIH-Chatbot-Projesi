@@ -2,6 +2,6 @@ streamlit
 python-dotenv
 datasets
 chromadb
-langchain
+langchain==0.1.118
 langchain-google-genai
 tiktoken
