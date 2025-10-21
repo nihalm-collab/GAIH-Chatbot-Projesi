@@ -1,8 +1,7 @@
 streamlit
-langchain
-chromadb
-google-generativeai
-langchain-google-genai
-pandas
 python-dotenv
 datasets
+chromadb
+langchain
+openai
+tiktoken
